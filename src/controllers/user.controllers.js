@@ -7,7 +7,7 @@ const EmailCode = require('../models/EmailCode');
 
 // { attributes: { exclude: ['createdAt', 'updatedAt'] } }
 // { attributes: ['properties','properties2'] }
-const frontBaseUrl = ``
+// const frontBaseUrl = ``
 const getAll = catchError(async (req, res) => {
     const results = await User.findAll();
     return res.json(results);
@@ -18,7 +18,7 @@ const create = catchError(async (req, res) => {
     const encrypted = await bcrypt.hash(req.body.password, 10)
     const result = await User.create({ ...req.body, password: encrypted });
     const code = require('crypto').randomBytes(32).toString('hex')
-    const link = `${frontBaseUrl}/verify_email/${code}`
+    const link = `${req.body.frontBaseUrl}/verify_email/${code}`
     await sendEmail({
         to: req.body.email,
         subject: "email verification",
@@ -86,7 +86,7 @@ const resetPassword = catchError(async (req, res) => {
     const user = await User.findOne({ where: { email } })
     if (!user) return res.status(401).json({ Message: 'Email Not Found!' });
     const code = require('crypto').randomBytes(32).toString('hex')
-    const link = `${frontBaseUrl}/reset_password/${code}`
+    const link = `${req.body.frontBaseUrl}/reset_password/${code}`
     await sendEmail({
         to: email,
         subject: "Reset Password",
